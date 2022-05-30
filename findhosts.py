@@ -7,6 +7,7 @@ def extract_hostnames_from_ip(ip):
     res={}
     try: 
       for block in response_json["blocks"]:
+         print(block)
          if str(ip)==str(block["ip"]).split("/")[0]:
           if len(block["hostnames"])>0:
            res[ip]=block["hostnames"]
@@ -23,10 +24,10 @@ def extract_hostnames_from_cidr(cidr):
 def write_to_file(res,name):
     with open(name, "w", encoding="UTF-8") as fp:
         for ip in res:
-            if len(res["ip"])<1:
-              fp.write("hostname :- ",str(res["ip"][0]))
+            if len(res[ip])<1:
+              fp.write("hostname :- ",str(res[ip][0]))
             else:
-              fp.write("hostnames :- ",'.'.join(map(str, res["ip"])))
+              fp.write("hostnames :- ",'.'.join(map(str, res[ip])))
             fp.write("\nip :- ",str(ip)+'\n')
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", help = "outputfile")
@@ -35,21 +36,21 @@ parser.add_argument("-ip",help = "Takes ip")
 args=parser.parse_args()  
 if args.ip:
     a1=extract_hostnames_from_ip(args.ip)
-    for ip in aq:
+    for ip in a1:
             print("\nip :- ",str(ip))
-            if len(res["ip"])<1:
-              print("hostname :- ",str(res["ip"][0])+'\n')
+            if len(a1[ip])<1:
+              print("hostname :- ",str(a1[ip][0])+'\n')
             else:
-              print("hostnames :- ",'.'.join(map(str, res["ip"]))+'\n')
+              print("hostnames :- ",'.'.join(map(str, a1[ip]))+'\n')
     if args.o:
         write_to_file(a1,args.o)
 elif args.cidr:
     a1=extract_hostnames_from_cidr(args.cidr)
-    for ip in aq:
+    for ip in a1:
             print("\nip :- ",str(ip))
-            if len(res["ip"])<1:
-              print("hostname :- ",str(res["ip"][0])+'\n')
+            if len(a1["ip"])<1:
+              print("hostname :- ",str(a1[ip][0])+'\n')
             else:
-              print("hostnames :- ",'.'.join(map(str, res["ip"]))+'\n')
+              print("hostnames :- ",'.'.join(map(str, a1[ip]))+'\n')
     if args.o:
         write_to_file(a1,args.o)
