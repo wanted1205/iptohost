@@ -2,12 +2,14 @@ import requests,json,argparse,ipaddress
 def extract_hostnames_from_ip(ip):
     url = "https://api.securitytrails.com/v1/ips/nearby/"
     headers = {"APIKEY": "YOUR_KEY"}
-    response = requests.request("GET", ip, headers=headers, verify=False)
+    response = requests.get(url+ip, headers=headers, verify=False)
     response_json = json.loads(response.content)
     res={}
     try: 
       for block in response_json["blocks"]:
-         res[ip]=block["hostnames"]
+         if ip in block["ip"]:
+          if len(block["hostname"])>1:
+           res[ip]=block["hostnames"]
     except KeyError as e:
         print("Error with  ip",ip)
     return(res)
@@ -21,7 +23,10 @@ def extract_hostnames_from_cidr(cidr):
 def write_to_file(res,name):
     with open(name, "w", encoding="UTF-8") as fp:
         for ip in res:
-            fp.write("hostname :- ",str(res["ip"]))    
+            if len(res["ip"])<1:
+              fp.write("hostname :- ",str(res["ip"][0]))
+            else:
+              fp.write("hostnames :- ",'.'.join(map(str, res["ip"])))
             fp.write("\nip :- ",str(ip)+'\n')
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", help = "outputfile")
