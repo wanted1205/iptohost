@@ -1,45 +1,43 @@
-import ipaddress
-import requests
-import json
-from tqdm import tqdm
-import argparse
- 
-# Initialize parser
-
-def extract_hostnames_from_cidr(cidr, customer_list=None):
+import requests,json,argparse,ipaddress
+def extract_hostnames_from_ip(ip):
     url = "https://api.securitytrails.com/v1/ips/nearby/"
     headers = {"APIKEY": "YOUR_KEY"}
-
-    ip_list = [url + ip for ip in (str(ip) for ip in ipaddress.IPv4Network(cidr))]
-    
-    hostnames = set()
-    ports = set()
-    customers = set()
-    for ip in tqdm(ip_list):
-        response = requests.request("GET", ip, headers=headers, verify=False)
-        response_json = json.loads(response.content)
-        try: 
-            for block in response_json["blocks"]:
-                hostnames.update(block["hostnames"])
-                ports.update(block["ports"])
-        except KeyError as e:
-            print(ip)
-
-    if customer_list:
-        for each in hostnames:
-            if each in customer_list:
-                customers.update(each)
-        return hostnames, customers, ports
-    return hostnames, ports
-
-def write_to_file(object_list, name):
+    response = requests.request("GET", ip, headers=headers, verify=False)
+    response_json = json.loads(response.content)
+    res={}
+    try: 
+      for block in response_json["blocks"]:
+         res[ip]=block["hostnames"]
+    except KeyError as e:
+        print("Error with  ip",ip)
+    return(res)
+def extract_hostnames_from_cidr(cidr):
+    if ff.cidr.check(cidr)==4:
+     ip_list = [str(ip) for ip in ipaddress.IPv4Network(cidr)]
+    else:
+     ip_list = [str(ip) for ip in ipaddress.IPv6Network(cidr)]
+    res={}
+    for ip in ip_list:
+       r1=extract_hostnames_from_ip(ip)
+       res[ip]=r1[ip]
+    return(res)
+def write_to_file(res,name):
     with open(name, "w", encoding="UTF-8") as fp:
-        for each in object_list:
-            fp.write(str(each))
-            fp.write("\n")          
+        for ip in res:
+            fp.write("hostname :- ",str(res["ip"]))    
+            fp.write("\nip :- ",str(ip)+'\n')
 parser = argparse.ArgumentParser()
 parser.add_argument("-o", help = "outputfile")
 parser.add_argument("-cidr",help = "Takes cidr")
 parser.add_argument("-ip",help = "Takes ip")
-parser.add_argument("-i",help = "Takes input file")
-args=parser.parse_args()    
+args=parser.parse_args()  
+if args.ip:
+    a1=extract_hostnames_from_ip(args.ip)
+    print(a1)
+    if args.o:
+        write_to_file(a1,args.o)
+elif args.cidr:
+    a1=extract_hostnames_from_cidr(args.cidr)
+    print(a1)
+    if args.o:
+        write_to_file(a1,args.o)
