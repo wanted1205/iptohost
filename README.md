@@ -1,3 +1,3 @@
 # iptohost
 
-Converts ip to hosts
+Converts ip/cidr to hostname via security trails
