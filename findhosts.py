@@ -8,7 +8,7 @@ def extract_hostnames_from_ip(ip):
     try: 
       for block in response_json["blocks"]:
          if ip in block["ip"]:
-          if len(block["hostname"])>1:
+          if len(block["hostnames"])>1:
            res[ip]=block["hostnames"]
     except KeyError as e:
         print("Error with  ip",ip)
