@@ -7,8 +7,8 @@ def extract_hostnames_from_ip(ip):
     res={}
     try: 
       for block in response_json["blocks"]:
-         if ip in block["ip"]:
-          if len(block["hostnames"])>1:
+         if str(ip)==str(block["ip"]).split("/")[0]:
+          if len(block["hostnames"])>0:
            res[ip]=block["hostnames"]
     except KeyError as e:
         print("Error with  ip",ip)
@@ -35,11 +35,21 @@ parser.add_argument("-ip",help = "Takes ip")
 args=parser.parse_args()  
 if args.ip:
     a1=extract_hostnames_from_ip(args.ip)
-    print(a1)
+    for ip in aq:
+            print("\nip :- ",str(ip))
+            if len(res["ip"])<1:
+              print("hostname :- ",str(res["ip"][0])+'\n')
+            else:
+              print("hostnames :- ",'.'.join(map(str, res["ip"]))+'\n')
     if args.o:
         write_to_file(a1,args.o)
 elif args.cidr:
     a1=extract_hostnames_from_cidr(args.cidr)
-    print(a1)
+    for ip in aq:
+            print("\nip :- ",str(ip))
+            if len(res["ip"])<1:
+              print("hostname :- ",str(res["ip"][0])+'\n')
+            else:
+              print("hostnames :- ",'.'.join(map(str, res["ip"]))+'\n')
     if args.o:
         write_to_file(a1,args.o)
