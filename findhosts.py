@@ -12,10 +12,7 @@ def extract_hostnames_from_ip(ip):
         print("Error with  ip",ip)
     return(res)
 def extract_hostnames_from_cidr(cidr):
-    if ff.cidr.check(cidr)==4:
-     ip_list = [str(ip) for ip in ipaddress.IPv4Network(cidr)]
-    else:
-     ip_list = [str(ip) for ip in ipaddress.IPv6Network(cidr)]
+    ip_list = [str(ip) for ip in ipaddress.IPv4Network(cidr)]
     res={}
     for ip in ip_list:
        r1=extract_hostnames_from_ip(ip)
